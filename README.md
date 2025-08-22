@@ -1,2 +1,2 @@
-# GLUT_pathogenicity_analysis
+# GLUT pathogenicity analysis
 Repository with GLUT pathogenicity analysis workflow
