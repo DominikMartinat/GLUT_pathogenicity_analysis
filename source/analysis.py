@@ -15,7 +15,7 @@ def average_pathogenicity(patho_dir, region_prefix, up_id_list, out_file):
     avg_pathogenicities = []
     up_ids = []
     for up_id in up_id_list:
-        patho_file = patho_dir / f'{region_prefix}{up_id}.csv'
+        patho_file = patho_dir / f'{region_prefix}_{up_id}.csv'
         df = pd.read_csv(patho_file)
         avg_pathogenicities.append(df['pathogenicity'].mean())
         up_ids.append(up_id)
