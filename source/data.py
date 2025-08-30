@@ -5,11 +5,12 @@ from pathlib import Path
 
 DATA_DIR = Path.cwd().joinpath('data')
 
-def import_alphamissense():
-    output_name = "AlphaMissense_aa_substitutions.tsv"
-    output = DATA_DIR.joinpath(output_name)
-    archive = DATA_DIR.joinpath(output_name + ".gz")
-    if os.path.exists(output):
+def get_alphamissense(output):
+    #output_name = "AlphaMissense_aa_substitutions.tsv"
+    #output = DATA_DIR.joinpath(output_name)
+    output = Path(output)
+    archive = output.parent / 'archive.gz'
+    if output.exists():
         print("AlphaMissense data already exists")
         return
     request = requests.get("https://zenodo.org/records/10813168/files/AlphaMissense_aa_substitutions.tsv.gz?download=1", stream=True)
@@ -23,9 +24,9 @@ def import_alphamissense():
     os.remove(archive)
     print ('AlphaMissense data downloaded')
 
-def import_pdb(up_id):
-    pdb_dir = DATA_DIR.joinpath('pdb')
-    output = pdb_dir.joinpath(up_id+'.pdb')
+def get_pdb(up_id, output):
+    #pdb_dir = DATA_DIR.joinpath('pdb')
+    #output = pdb_dir.joinpath(up_id+'.pdb')
     if os.path.exists(output):
         return
     records = requests.get(f"https://alphafold.com/api/prediction/{up_id}", headers={"accept": "application/json"}).json()
@@ -33,9 +34,9 @@ def import_pdb(up_id):
     with open(output, 'wb') as f:
         f.write(requests.get(pdbUrl).content)
 
-def import_fasta(up_id):
-    fasta_dir = DATA_DIR.joinpath('fasta')
-    output = fasta_dir.joinpath(up_id+'.fasta')
+def get_fasta(up_id, output):
+    #fasta_dir = DATA_DIR.joinpath('fasta')
+    #output = fasta_dir.joinpath(up_id+'.fasta')
     if os.path.exists(output):
         return
     records = requests.get(f"https://www.ebi.ac.uk/proteins/api/proteins/{up_id}", headers={"accept": "text/x-fasta"})

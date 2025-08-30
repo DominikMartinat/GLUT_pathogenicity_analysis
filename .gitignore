@@ -1,8 +1,14 @@
-# AlphaMissense datafile
-data/AlphaMissense_aa_substitutions.tsv
+# data directory
+data/
+
+# data backup directory - used during worflow development
+data_backup/
+
+#results directory
+#results/
 
 #ignore ipynb checkpoints
-.ipynb_checkpoints/*
+**/.ipynb_checkpoints/
 
 #ignore pycache
-**/__pycache__
+**/__pycache__/
