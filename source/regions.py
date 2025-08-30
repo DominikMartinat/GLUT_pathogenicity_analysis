@@ -16,7 +16,8 @@ def all_residues(pdb_file,out_file):
                     residue_names.append(l[3])
     pd.DataFrame(data={'residue_label':residue_labels,'residue_name':residue_names}).to_csv(out_file, index = False)
 
-def membrane_residues(deeptmhmm_file, out_dir, identifier):
+#parse deeptmhmm output file to get intracellular, extracellular and membrane residues
+def membrane_residues(deeptmhmm_file, out_dir, identifier, ext_cellular_p='O', int_cellular_p='I', membrane_p='M'):
     intracellular = {'residue_label':[],'residue_name':[]}
     extracellular = {'residue_label':[],'residue_name':[]}
     membrane = {'residue_label':[],'residue_name':[]}
@@ -35,9 +36,9 @@ def membrane_residues(deeptmhmm_file, out_dir, identifier):
         elif region == 'M':
             membrane['residue_label'].append(i+1)
             membrane['residue_name'].append(sequence[i])
-    intracellular_file = out_dir / f'I_{identifier}.csv'
-    extracellular_file = out_dir / f'O_{identifier}.csv'
-    membrane_file = out_dir / f'M_{identifier}.csv'
+    intracellular_file = out_dir / f'{int_cellular_p}_{identifier}.csv'
+    extracellular_file = out_dir / f'{ext_cellular_p}_{identifier}.csv'
+    membrane_file = out_dir / f'{membrane_p}_{identifier}.csv'
 
     pd.DataFrame(data=intracellular).to_csv(intracellular_file,index=False)
     pd.DataFrame(data=extracellular).to_csv(extracellular_file,index=False)
