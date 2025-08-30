@@ -2,10 +2,10 @@
 data/
 
 # data backup directory - used during worflow development
-data_backup/
+#data_backup/
 
 #results directory
-#results/
+results/
 
 #ignore ipynb checkpoints
 **/.ipynb_checkpoints/
