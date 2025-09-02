@@ -40,8 +40,6 @@ def sift_residues(sift_file, out_file):
     residue_labels = []
     residue_names = []
     pathogenicities = []
-
-    # POS = '2'
     
     with open(sift_file,'r') as f:
         for line in f:
@@ -53,20 +51,10 @@ def sift_residues(sift_file, out_file):
                 name = l[0][-1]
                 pathos = l[2:]
                 c = 0
-                # if position == POS:
-                #     print(pathos)
-                # if position == POS:
-                #     print(f'  {position} {name}')
                 for i in range(20):
                     if names[i] != name:
                         c += float(pathos[i])
-                    #     if position == POS:
-                    #         print(f'    added {pathos[i]}')
-                    # elif position == POS:
-                    #     print(f'    not added {pathos[i]}')
                 avg_pat = c/19
-                # if position == POS:
-                #     print(f' count {c} avg {avg_pat}')
                 residue_labels.append(position)
                 residue_names.append(name)
                 pathogenicities.append(avg_pat)
