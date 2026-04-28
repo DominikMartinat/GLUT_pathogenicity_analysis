@@ -51,3 +51,7 @@ def get_fasta(up_id, output):
     records = requests.get(f"https://www.ebi.ac.uk/proteins/api/proteins/{up_id}", headers={"accept": "text/x-fasta"})
     with open(output, 'w') as f:
         f.write(records.text)
+
+def get_protein_length(up_id):
+    records = requests.get(f"https://rest.uniprot.org/uniprotkb/search?query=accession:{up_id}", headers={"accept": "application/json"}).json()
+    return records['results'][0]['sequence']['length']
