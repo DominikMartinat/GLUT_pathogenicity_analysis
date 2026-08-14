@@ -1,14 +1,20 @@
-# data directory
-data/
+# Ignore large generated data directories
+data/*
+!data/statistics/
+!data/clinvar/
 
-# data backup directory - used during worflow development
-#data_backup/
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+build/
+dist/
 
-#results directory
-results/
+# Jupyter
+.ipynb_checkpoints/
 
-#ignore ipynb checkpoints
-**/.ipynb_checkpoints/
-
-#ignore pycache
-**/__pycache__/
+# macOS / OS metadata
+.DS_Store
+Thumbs.db
