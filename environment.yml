@@ -15,3 +15,5 @@ dependencies:
   - requests>=2.28.0
   - tqdm>=4.65.0
   - jupyter
+  - pathlib
+  - pybiolib

@@ -8,3 +8,5 @@ openpyxl>=3.1.0
 requests>=2.28.0
 tqdm>=4.65.0
 jupyter>=1.0.0
+pathlib>=1.0.0
+pybiolib>=1.0.0
