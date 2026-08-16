@@ -19,18 +19,18 @@ def run_clinvar_benchmark(data_csv: Path, output_dir: Path) -> dict[str, float]:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(data_csv)
-    print(f"Loaded {len(df)} ClinVar variants across {df['protein'].nunique()} GLUT proteins.")
-    print("Class breakdown:\n", df["clinical_significance"].value_counts())
+    print(f"Loaded {len(df)} ClinVar variants across {df['Protein'].nunique()} GLUT proteins.")
+    print("Class breakdown:\n", df["Germline classification"].value_counts())
 
     # Binary label: Pathogenic = 1, Benign = 0
-    y_true = (df["clinical_significance"].str.lower().str.contains("pathogenic")).astype(int)
+    y_true = (df["Germline classification"].str.lower().str.contains("pathogenic")).astype(int)
 
     # Predictions
     # Note: For SIFT, lower score = more deleterious, so inverted (1 - score) is used for standard ROC ranking
     scores = {
-        "AlphaMissense": df["alphamissense_score"],
-        "SIFT": 1.0 - df["sift_score"],
-        "PolyPhen-2": df["polyphen2_score"],
+        "AlphaMissense": df["AlphaMissense"],
+        "SIFT": 1.0 - df["SIFT"],
+        "PolyPhen-2": df["PolyPhen-2"],
     }
 
     aucs = {}
