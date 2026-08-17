@@ -95,7 +95,7 @@ pip install -r requirements.txt
 Run the statistical pipeline on the 14 GLUT transporters ($N=14$):
 
 ```bash
-python analyze_variant_impact.py --data-dir data/statistics --output-dir results/figures
+python analyze_variant_impact.py --data-dir data/statistics --output-dir results/statistics
 ```
 
 This generates:
@@ -108,7 +108,7 @@ This generates:
 Run the ClinVar validation pipeline on the 140 curated clinical variants:
 
 ```bash
-python src/clinvar_benchmark.py --data data/clinvar/glut_clinvar_variants.csv --output-dir results/figures
+python src/clinvar_benchmark.py --data data/clinvar/glut_clinvar_variants.csv --output-dir results/clinvar_benchmark
 ```
 
 This generates:
