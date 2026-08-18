@@ -18,8 +18,10 @@ The facilitative glucose transporter family (**GLUT**, encoded by *SLC2A1–SLC2
 1. **Topological Domains:** Transmembrane (TM) helices, intracellular loops, and extracellular segments (annotated via [DeepTMHMM](https://dtu.biolib.com/DeepTMHMM)).
 2. **Translocation Pathways:** Pore-lining residues along the central cavity computed with [MOLEonline](https://mole.upol.cz).
 3. **Substrate-Binding Sites:** Primary binding pockets predicted via [PrankWeb](https://prankweb.cz).
-4. **Pathogenicity Predictors:** Benchmark comparisons between deep learning-based [AlphaMissense](https://github.com/google-deepmind/alphamissense), evolutionary-based [SIFT](https://sift.bii.a-star.edu.sg), and classifier-based [PolyPhen-2](http://genetics.bwh.harvard.edu/pph2) (via Rhapsody).
+4. **Pathogenicity Predictors:** Benchmark comparisons between deep learning-based [AlphaMissense](https://github.com/google-deepmind/alphamissense) (via the [PyMissense](https://github.com/getian107/pymissense) tool), evolutionary-based [SIFT](https://sift.bii.a-star.edu.sg), and classifier-based [PolyPhen-2](http://genetics.bwh.harvard.edu/pph2) (via Rhapsody).
 5. **Clinical Validation:** Empirical benchmark against curated human clinical missense variants from [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/) with ROC-AUC analysis.
+
+The whole analysis is organized as four sequential, numbered Jupyter notebooks in the repository root — they are meant to be run in order, since each one consumes outputs produced by the previous one(s).
 
 ---
 
@@ -27,42 +29,58 @@ The facilitative glucose transporter family (**GLUT**, encoded by *SLC2A1–SLC2
 
 ```text
 GLUT_pathogenicity_analysis/
-├── analyze_variant_impact.py      # Top-level CLI for regional statistics & Fig 4
-├── requirements.txt               # Pip dependencies
-├── environment.yml                # Conda environment definition
-├── LICENSE                        # Creative Commons Attribution 4.0 (CC BY 4.0)
-├── README.md                      # Documentation
-├── data/
-│   ├── statistics/                # Standardized regional pathogenicity TSVs (N=14)
-│   │   ├── PyMissense.tsv         # AlphaMissense scores
-│   │   ├── PolyPhen-2.tsv         # PolyPhen-2 scores
-│   │   └── SIFT.tsv               # SIFT scores
-│   ├── clinvar/                   # Curated ClinVar missense variants (Table 2)
-│   │   └── glut_clinvar_variants.csv
-│   └── data_backup/               # Raw inputs (PDBs, MOLE JSONs, PrankWeb CSVs, DALI TSVs)
-├── src/                           # Modular Python package
+├── 01_pathogenicity_workflow.ipynb    # Region mapping + per-residue/region pathogenicity assignment -> Figure 3
+├── 02_align.ipynb                     # DALI structural alignment -> pathogenicity hotbed mapping -> Figure 5
+├── 03_statistics.ipynb                # Regional statistical comparison -> Figure 4 (uses source/analyze_variant_impact.py)
+├── 04_clinvar_clinical_benchmark.ipynb # ClinVar ROC-AUC benchmark -> Figure 6B
+├── requirements.txt                   # Pip dependencies
+├── environment.yml                    # Conda environment definition
+├── LICENSE                            # Creative Commons Attribution 4.0 (CC BY 4.0)
+├── README.md                          # Documentation
+├── source/                            # Modular Python package used by the notebooks
 │   ├── __init__.py
-│   ├── analyze_variant_impact.py  # Statistical engine & paired t-test pipeline
-│   ├── clinvar_benchmark.py       # ClinVar ROC-AUC & helix distribution module
-│   ├── data_fetch.py              # FASTA/structure retrieval helpers
-│   ├── regions.py                 # Topology & pore/pocket region parsing
-│   ├── pathogenicity.py           # Residue-level pathogenicity assignment
-│   ├── alignment.py               # DALI structural alignment parser
-│   └── visualization.py           # Heatmap and plotting routines
-├── notebooks/                     # Interactive, reproducible Jupyter notebooks
-│   ├── 01_region_and_pathogenicity_mapping.ipynb   # Generates Figs 3 & 4
-│   ├── 02_dali_structural_alignment.ipynb          # Generates Fig 5
-│   └── 03_clinvar_clinical_benchmark.ipynb         # Generates Fig 6 & Table 2
-└── results/
-    └── figures/                   # Output figures (PNG & SVG) and summary statistics
-        ├── figure4_region_comparison_bars.png
-        ├── figure4_region_comparison_bars.svg
-        ├── figure6b_roc_curves.png
-        ├── figure6b_roc_curves.svg
-        ├── figure6c_helix_variants.png
-        ├── figure6c_helix_variants.svg
-        ├── pvalue_heatmap_*.png
-        └── region_summary_stats.csv
+│   ├── data.py                        # FASTA/PDB/AlphaMissense download helpers
+│   ├── predict.py                     # PyMissense & DeepTMHMM prediction runners
+│   ├── regions.py                     # Topology, pore/lining-residue & binding-pocket region parsing
+│   ├── path_method.py                 # Per-residue pathogenicity extraction (AlphaMissense/SIFT/PolyPhen-2)
+│   ├── analysis.py                    # Region pathogenicity assignment, averaging & heatmap plotting
+│   ├── helpers.py                     # MOLEonline zip->json conversion, CSV merging utilities
+│   └── analyze_variant_impact.py      # Statistical engine (paired t-tests, Fig 4 & p-value heatmaps)
+├── data/                               # All inputs needed to reproduce the analysis (see note below)
+│   ├── pdb/                            # Fetched AlphaFold structures, one per protein (generated by notebook 01)
+│   ├── fasta/                          # Fetched sequences, one per protein (generated by notebook 01)
+│   ├── sift/                           # SIFT predictions (obtained manually, one file per protein)
+│   ├── rhapsody/                       # PolyPhen-2/Rhapsody predictions (obtained manually, one file per protein)
+│   ├── prankweb/                       # PrankWeb binding-pocket predictions for full-length proteins
+│   ├── moleonline/                     # MOLEonline pore lining-residue predictions for full-length proteins
+│   ├── boltz_cut/                      # Boltz-2 structures of membrane-truncated proteins (manual step, see below)
+│   │   ├── prankweb/                   # PrankWeb predictions on the truncated structures (used in the analysis)
+│   │   └── moleonline/                 # MOLEonline predictions on the truncated structures (used in the analysis)
+│   ├── align/                          # DALI structural alignment TSVs, used by notebook 02
+│   ├── clinvar/                        # Raw ClinVar TSV exports per protein, used by notebook 04
+│   └── AlphaMissense_aa_substitutions.tsv  # NOT included (1.2 GB) — must be downloaded, see below
+└── results/                            # All generated outputs (git-ignored, except the manual xlsx noted below)
+    ├── pymissense/                      # Per-protein PDBs annotated with AlphaMissense scores (notebook 01)
+    ├── deeptmhmm/                       # DeepTMHMM topology (.3line) outputs per protein (notebook 01)
+    ├── regions/                         # Per-region residue lists per protein (all/I/O/M/lining/pocket) (notebook 01)
+    ├── pathogenicities/                 # Per-residue pathogenicity by region & method, full-length proteins (notebook 01)
+    │   ├── alphamissense/ ├── sift/ └── rhapsody/
+    ├── cut_pathogenicities/             # Same as above, restricted to the membrane-truncated core (notebook 01)
+    │   ├── alphamissense/ ├── sift/ └── rhapsody/     (feeds notebooks 03 & 04)
+    ├── statistics/                      # Output of notebook 03 -> Figure 4
+    │   ├── statistics_data/             # PyMissense/SIFT/PolyPhen-2.tsv reformatted from results/cut_pathogenicities/
+    │   ├── figure4_region_comparison_bars.png(.svg)
+    │   ├── pvalue_heatmap_<method>.png(.svg)
+    │   ├── region_summary_stats.csv, summary_statistics_with_CI.xlsx
+    │   └── neighbor_region_pvalues.csv(.xlsx)
+    ├── clinvar_benchmark/               # Output of notebook 04
+    │   └── ROC_curve.tiff               # Figure 6B
+    ├── AlphaMissense_pathogenicity_heatmap.png    # Figure 3 (AlphaMissense)
+    ├── PolyPhen-2_pathogenicity_heatmap.png       # Figure 3 (PolyPhen-2)
+    ├── SIFT_pathogenicity_heatmap.png             # Figure 3 (SIFT)
+    ├── pathogenicity_alignment_GLUT1.tiff         # Figure 5 (alignment to GLUT1)
+    ├── pathogenicity_alignment_GLUT13.tiff        # Figure 5 (alignment to GLUT13)
+    └── AlphaMissense_values-per_protein_helix.xlsx # Manual analysis, tracked in git (see note below)
 ```
 
 ---
@@ -78,6 +96,12 @@ conda env create -f environment.yml
 conda activate glut_pathogenicity
 ```
 
+`pymissense` is a pip-only package — install it separately after activating the conda environment:
+
+```bash
+pip install pymissense
+```
+
 ### Option 2: Virtual Environment (pip / uv)
 
 ```bash
@@ -88,40 +112,43 @@ pip install -r requirements.txt
 
 ---
 
+## Data availability
+
+Everything the notebooks need is already provided under `data/`, **with one exception**: `data/AlphaMissense_aa_substitutions.tsv`. This is the raw AlphaMissense whole-proteome prediction file, ~1.2 GB zipped, and is too large to track in git. Notebook `01_pathogenicity_workflow.ipynb` will download and extract it automatically on first run (`source/data.py:get_alphamissense`) if it is missing.
+
+A few inputs cannot be generated automatically and were produced manually with external web services; they are already checked into `data/` so you do not need to regenerate them unless you want to reproduce the analysis for different proteins:
+* **SIFT** (`data/sift/`) and **PolyPhen-2 / Rhapsody** (`data/rhapsody/`) predictions.
+* **PrankWeb** binding-pocket predictions (`data/prankweb/`, `data/boltz_cut/prankweb/`).
+* **MOLEonline** pore lining-residue predictions (`data/moleonline/`, `data/boltz_cut/moleonline/`).
+* **Boltz-2** structures of the membrane-truncated proteins (`data/boltz_cut/*.pdb`), produced from the extramembrane-terminus boundaries identified in notebook 01 (see its "Simulation of truncated proteins using Boltz" section).
+* **DALI** structural alignment tables (`data/align/`), used by notebook 02.
+* **ClinVar** raw variant exports (`data/clinvar/`), used by notebook 04.
+
+---
+
 ## Reproducing Paper Results
 
-### 1. Statistical Analysis & Grouped Bar Chart (Figure 4)
+Run the notebooks **in numeric order** — each one builds on results produced by the previous ones.
 
-Run the statistical pipeline on the 14 GLUT transporters ($N=14$):
+### 1. `01_pathogenicity_workflow.ipynb` — Region mapping & pathogenicity assignment (Figure 3)
 
-```bash
-python analyze_variant_impact.py --data-dir data/statistics --output-dir results/statistics
-```
+For each of the 14 GLUT transporters, this notebook downloads structures/sequences, runs PyMissense (AlphaMissense) and DeepTMHMM, parses PrankWeb/MOLEonline outputs, assigns per-residue pathogenicity for every topological/functional region, and averages it per protein/region. It writes the intermediate region and pathogenicity tables under `results/` (see the tree above) and produces the three per-method pathogenicity heatmaps that make up Figure 3. Markdown cells inside the notebook document each manual step (obtaining SIFT/PolyPhen-2 predictions, running Boltz-2, PrankWeb, MOLEonline) in detail.
 
-This generates:
-* `results/figures/figure4_region_comparison_bars.png` (and `.svg`) — Grouped bar chart with paired $t$-test significance brackets ($^*p < 0.05, ^{**}p < 0.005, ^{***}p < 0.0005$).
-* `results/figures/pvalue_heatmap_<method>.png` (and `.svg`) — Pairwise $p$-value heatmaps.
-* `results/figures/region_summary_stats.csv` — Mean, SEM, and 95% Confidence Intervals per region.
+### 2. `02_align.ipynb` — Structural alignment & pathogenicity hotbeds (Figure 5)
 
-### 2. Clinical Variant Benchmark & ROC Curves (Figure 6 & Table 2)
+Uses the DALI alignment of all 14 structures (aligned to GLUT13 and, separately, to GLUT1 — the two longest sequences) together with the AlphaMissense pathogenicity from notebook 01 to plot average pathogenicity along the aligned sequence position, highlighting transmembrane segments. Requires `results/pathogenicities/alphamissense/` and `results/deeptmhmm/` from notebook 01.
 
-Run the ClinVar validation pipeline on the 140 curated clinical variants:
+### 3. `03_statistics.ipynb` — Regional statistical comparison (Figure 4)
 
-```bash
-python src/clinvar_benchmark.py --data data/clinvar/glut_clinvar_variants.csv --output-dir results/clinvar_benchmark
-```
+Reformats the `results/cut_pathogenicities/*/united_averages.csv` tables from notebook 01 into the flat TSV format expected by the statistics engine, then calls `source/analyze_variant_impact.py::run()` to compute paired *t*-tests between neighboring regions (binding pocket → lining residues → transmembrane → whole protein → intracellular → extracellular) and render Figure 4 plus supplementary p-value heatmaps. Requires notebook 01 to have been run first, since it produces `results/cut_pathogenicities/`. This notebook is the only way to run the statistical analysis — there is no standalone command-line entry point.
 
-This generates:
-* `results/figures/figure6b_roc_curves.png` (and `.svg`) — ROC-AUC curves comparing AlphaMissense ($\text{AUC} = 0.88$), SIFT ($\text{AUC} = 0.79$), and PolyPhen-2 ($\text{AUC} = 0.78$).
-* `results/figures/figure6c_helix_variants.png` (and `.svg`) — Pathogenic vs. benign variant counts across transmembrane helices TM1–12.
+### 4. `04_clinvar_clinical_benchmark.ipynb` — Clinical variant benchmark (Figure 6B)
 
-### 3. Interactive Notebooks
+Merges the per-protein ClinVar exports in `data/clinvar/`, maps each variant's position to the AlphaMissense/SIFT/PolyPhen-2 pathogenicity scores from `results/pathogenicities/` (notebook 01), and computes ROC-AUC curves comparing the three predictors, saved to `results/clinvar_benchmark/ROC_curve.tiff`.
 
-Launch Jupyter to explore the step-by-step pipeline:
+### Manual helix-level analysis
 
-```bash
-jupyter notebook notebooks/
-```
+`results/AlphaMissense_values-per_protein_helix.xlsx` is the result of a manual analysis — not produced by any script or notebook in this repository — averaging AlphaMissense pathogenicity scores per individual transmembrane helix (rather than per whole TM region) for each GLUT protein. It is built from the per-residue AlphaMissense pathogenicities in `results/pathogenicities/alphamissense/` and the DeepTMHMM topology annotations in `results/deeptmhmm/`, manually segmenting the contiguous membrane (`M`) stretches into individual helices. Because `results/` is otherwise git-ignored (all of it is regenerable by the notebooks), this file is explicitly excluded from `.gitignore` and tracked in git as it cannot be regenerated automatically.
 
 ---
 
