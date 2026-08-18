@@ -1,8 +1,11 @@
 # Ignore large generated files and large data files
-results/
+results/*
 data/AlphaMissense_aa_substitutions.tsv
 data/fasta/
 data/pdb/
+
+#keep result excel file
+!results/AlphaMissense_values-per_protein_helix.xlsx
 
 # Python cache & virtual environments
 __pycache__/
