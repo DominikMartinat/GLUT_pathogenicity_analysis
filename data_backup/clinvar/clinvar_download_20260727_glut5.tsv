@@ -1,0 +1,2 @@
+Variation	Genes	Type	Condition	Classification	Review status	Molecular consequence	Protein change	Germline date last evaluated	Somatic clinical impact date last evaluated	Oncogenicity date last evaluated	GRCh37 Location	GRCh38 Location	Variation ID	VCV accession	rs_ID
+NM_003039.3(SLC2A5):c.328A>G (p.Ile110Val)	SLC2A5	single nucleotide variant	not provided	G: Benign	criteria provided, multiple submitters, no conflicts	missense variant, intron variant	I66V, I110V	2018/04/17			1:9107759	1:9047700	771300	VCV000771300	rs696907
