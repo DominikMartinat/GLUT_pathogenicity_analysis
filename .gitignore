@@ -1,7 +1,5 @@
 # Ignore large generated data directories
-data/*
-!data/statistics/
-!data/clinvar/
+data_backup/AlphaMissense_values-per_protein_helix.xlsx
 
 # Python cache & virtual environments
 __pycache__/
