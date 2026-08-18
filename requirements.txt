@@ -10,3 +10,4 @@ tqdm>=4.65.0
 jupyter>=1.0.0
 pathlib>=1.0.0
 pybiolib>=1.0.0
+pymissense>=1.2.0
