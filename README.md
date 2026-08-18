@@ -116,7 +116,7 @@ pip install -r requirements.txt
 
 ## Data availability
 
-Everything the notebooks need is already provided under `data/`, **with one exception**: `data/AlphaMissense_aa_substitutions.tsv`. This is the raw AlphaMissense whole-proteome prediction file, ~1.2 GB zipped, and is too large to track in git. Notebook `01_pathogenicity_workflow.ipynb` will download and extract it automatically on first run (`source/data.py:get_alphamissense`) if it is missing.
+Everything the notebooks need is already provided under `data/`, **with one exception**: `data/AlphaMissense_aa_substitutions.tsv`. This is the raw AlphaMissense whole-proteome prediction file, ~1.2 GB zipped, and is too large to track in git. Notebook `01_pathogenicity_workflow.ipynb` will download and extract it automatically on first run (`source/data.py:get_alphamissense`) if it is missing. It can be obtained from [Zenodo](https://doi.org/10.5281/zenodo.10813168).
 
 A few inputs cannot be generated automatically and were produced manually with external web services; they are already checked into `data/` so you do not need to regenerate them unless you want to reproduce the analysis for different proteins:
 * **SIFT** (`data/sift/`) and **PolyPhen-2 / Rhapsody** (`data/rhapsody/`) predictions.
