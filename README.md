@@ -27,7 +27,7 @@ The whole analysis is organized as four sequential, numbered Jupyter notebooks i
 
 ## Repository Structure
 
-Not all folders re present in the repo. Missing folders re generaetd during first run of the workflow.
+Not all folders re present in the repo. Missing folders regenerated during first run of the workflow.
 
 ```text
 GLUT_pathogenicity_analysis/
