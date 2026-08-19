@@ -21,13 +21,13 @@ The facilitative glucose transporter family (**GLUT**, encoded by *SLC2A1–SLC2
 4. **Pathogenicity Predictors:** Benchmark comparisons between deep learning-based [AlphaMissense](https://github.com/google-deepmind/alphamissense) (via the [PyMissense](https://github.com/getian107/pymissense) tool), evolutionary-based [SIFT](https://sift.bii.a-star.edu.sg), and classifier-based [PolyPhen-2](http://genetics.bwh.harvard.edu/pph2) (via Rhapsody).
 5. **Clinical Validation:** Empirical benchmark against curated human clinical missense variants from [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/) with ROC-AUC analysis.
 
-The whole analysis is organized as four sequential, numbered Jupyter notebooks in the repository root — they are meant to be run in order, however the main one is `01_pathogenicity_workflow.ipynb`. The other notbeooks consume its output and can be run in an arbitrary order.
+The whole analysis is organised as four sequential, numbered Jupyter notebooks in the repository root — they are meant to be run in order; however, the main one is `01_pathogenicity_workflow.ipynb`. The other notebooks consume their output and can be run in an arbitrary order.
 
 ---
 
 ## Repository Structure
 
-Not all folders re present in the repo. Missing folders regenerated during first run of the workflow.
+Not all folders are represented in the repo. Missing folders regenerated during the first run of the workflow.
 
 ```text
 GLUT_pathogenicity_analysis/
